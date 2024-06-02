@@ -1,79 +1,106 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const homeLink = document.getElementById('home-link');
-    const signUpLink = document.getElementById('sign-up-link');
-    const signInLink = document.getElementById('sign-in-link');
+    const signUpForm = document.getElementById('sign-up-form');
+    const signInForm = document.getElementById('sign-in-form');
+    const newPostForm = document.getElementById('new-post-form');
     const newPostLink = document.getElementById('new-post-link');
-    
-    const signUpSection = document.getElementById('sign-up');
-    const signInSection = document.getElementById('sign-in');
     const blogPostsSection = document.getElementById('blog-posts');
     const newPostSection = document.getElementById('new-post');
-    
-    homeLink.addEventListener('click', function() {
-        signUpSection.classList.remove('active');
-        signInSection.classList.remove('active');
-        newPostSection.classList.remove('active');
-        blogPostsSection.classList.add('active');
-    });
-    
-    signUpLink.addEventListener('click', function() {
-        signUpSection.classList.add('active');
-        signInSection.classList.remove('active');
-        newPostSection.classList.remove('active');
-        blogPostsSection.classList.remove('active');
-    });
+    const users = JSON.parse(localStorage.getItem('users')) || [];
 
-    signInLink.addEventListener('click', function() {
-        signUpSection.classList.remove('active');
-        signInSection.classList.add('active');
-        newPostSection.classList.remove('active');
-        blogPostsSection.classList.remove('active');
-    });
-
+    // Toggle new post section visibility
     newPostLink.addEventListener('click', function() {
-        signUpSection.classList.remove('active');
-        signInSection.classList.remove('active');
-        newPostSection.classList.add('active');
-        blogPostsSection.classList.remove('active');
+        if (isUserLoggedIn()) {
+            newPostSection.classList.add('active');
+            blogPostsSection.classList.remove('active');
+        } else {
+            alert('You need to sign in to post a blog.');
+        }
     });
 
-    document.getElementById('sign-up-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('User signed up successfully!');
-        document.getElementById('sign-up-form').reset();
-    });
+    // Handle sign-up form submission
+    if (signUpForm) {
+        signUpForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const country = document.getElementById('country').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
 
-    document.getElementById('sign-in-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('User signed in successfully!');
-        document.getElementById('sign-in-form').reset();
-    });
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
 
-    document.getElementById('new-post-form').addEventListener('submit', function(e) {
-        e.preventDefault();
+            const newUser = { name, email, phone, country, password };
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('User signed up successfully!');
+            signUpForm.reset();
+            window.location.href = 'signin.html';
+        });
+    }
 
-        const title = document.getElementById('post-title').value;
-        const content = document.getElementById('post-content').value;
-        const postSection = document.getElementById('blog-posts');
+    // Handle sign-in form submission
+    if (signInForm) {
+        signInForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
-        const newPost = document.createElement('article');
-        newPost.className = 'post';
+            const user = users.find(user => user.email === username && user.password === password);
+            if (user) {
+                localStorage.setItem('loggedInUser', JSON.stringify(user));
+                alert('User signed in successfully!');
+                signInForm.reset();
+                window.location.href = 'index.html';
+            } else {
+                alert('Invalid username or password.');
+            }
+        });
+    }
 
-        const postTitle = document.createElement('h2');
-        postTitle.textContent = title;
+    // Handle new post form submission
+    if (newPostForm) {
+        newPostForm.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-        const postDate = document.createElement('p');
-        postDate.innerHTML = `Posted on <time datetime="${new Date().toISOString()}">${new Date().toLocaleDateString()}</time> by Author`;
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            const postSection = document.getElementById('blog-posts');
 
-        const postContent = document.createElement('p');
-        postContent.textContent = content;
+            const newPost = document.createElement('article');
+            newPost.className = 'post';
 
-        newPost.appendChild(postTitle);
-        newPost.appendChild(postDate);
-        newPost.appendChild(postContent);
+            const postTitle = document.createElement('h2');
+            postTitle.textContent = title;
 
-        postSection.appendChild(newPost);
+            const postDate = document.createElement('p');
+            postDate.innerHTML = `Posted on <time datetime="${new Date().toISOString()}">${new Date().toLocaleDateString()}</time> by ${getLoggedInUser().name}`;
 
-        document.getElementById('new-post-form').reset();
-    });
+            const postContent = document.createElement('p');
+            postContent.textContent = content;
+
+            newPost.appendChild(postTitle);
+            newPost.appendChild(postDate);
+            newPost.appendChild(postContent);
+
+            postSection.appendChild(newPost);
+
+            newPostForm.reset();
+            newPostSection.classList.remove('active');
+            blogPostsSection.classList.add('active');
+        });
+    }
+
+    // Check if a user is logged in
+    function isUserLoggedIn() {
+        return !!localStorage.getItem('loggedInUser');
+    }
+
+    // Get the logged-in user's details
+    function getLoggedInUser() {
+        return JSON.parse(localStorage.getItem('loggedInUser'));
+    }
 });
