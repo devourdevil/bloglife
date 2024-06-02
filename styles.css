@@ -35,6 +35,44 @@ main {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+.form-section {
+    display: none;
+}
+
+.form-section.active {
+    display: block;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    margin-bottom: 0.5rem;
+}
+
+form input,
+form textarea {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+form button {
+    padding: 0.5rem 1rem;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#blog-posts {
+    margin-top: 2rem;
+}
+
 article.post {
     border-bottom: 1px solid #ddd;
     margin-bottom: 1rem;
@@ -43,34 +81,4 @@ article.post {
 
 article.post h2 {
     margin: 0;
-}
-
-#new-post {
-    margin-top: 2rem;
-}
-
-#new-post form {
-    display: flex;
-    flex-direction: column;
-}
-
-#new-post form label {
-    margin-bottom: 0.5rem;
-}
-
-#new-post form input,
-#new-post form textarea {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-#new-post form button {
-    padding: 0.5rem 1rem;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
 }
